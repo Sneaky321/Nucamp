@@ -13,8 +13,15 @@ import AboutScreen from './AboutScreen';
 import ContactScreen from './ContactScreen';
 import { Icon } from 'react-native-elements';
 import logo from '../assets/images/logo.png';
-
+import { useDispatch } from 'react-redux';
+import { useEffect } from 'react';
+import { fetchPartners } from '../features/partners/partnersSlice';
+import { fetchCampsites } from '../features/campsites/campsiteSlice.js';
+import { fetchPromotions } from '../features/promotions/promotionSlice.js';
+import { fetchComments } from '../features/comments/commentsSlice.js';
+import ReservationScreen from './ReservationScreen.js';
 const Drawer = createDrawerNavigator();
+
 
 const screenOptions = {
     headerTintColor: '#fff',
@@ -89,6 +96,29 @@ const ContactNavigator = () => {
     );
 };
 
+const ReservationNavigator = () => {
+    const Stack = createStackNavigator();
+    return (
+        <Stack.Navigator screenOptions={screenOptions}>
+            <Stack.Screen
+                name='Reservation'
+                component={ReservationScreen}
+                options={({ navigation }) => ({
+                    title: 'Reservation Search',
+                    headerLeft: () => (
+                        <Icon
+                            name='tree'
+                            type='font-awesome'
+                            iconStyle={styles.stackIcon}
+                            onPress={() => navigation.toggleDrawer()}
+                        />
+                    )
+                })}
+            />
+        </Stack.Navigator>
+    );
+};
+
 const DirectoryNavigator = () => {
     const Stack = createStackNavigator();
     return (
@@ -137,6 +167,15 @@ const CustomDrawerContent = (props) => (
 );
 
 const Main = () => {
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        dispatch(fetchCampsites());
+        dispatch(fetchPromotions());
+        dispatch(fetchPartners());
+        dispatch(fetchComments());
+    }, [dispatch]);
+
     return (
         <View
             style={{
@@ -146,9 +185,9 @@ const Main = () => {
             }}
         >
             <Drawer.Navigator
-                initialRouteName='Home'
+                initialRouteName='HomeDrawer'
                 drawerContent={CustomDrawerContent}
-                drawerStyle={{ backgroundColor: '#CEC8FF' }}
+                screenOptions={{ drawerStyle: { backgroundColor: '#CEC8FF' }}}
             >
                 <Drawer.Screen
                     name='Home'
@@ -174,6 +213,22 @@ const Main = () => {
                         drawerIcon: ({ color }) => (
                             <Icon
                                 name='list'
+                                type='font-awesome'
+                                size={24}
+                                iconStyle={{ width: 24 }}
+                                color={color}
+                            />
+                        )
+                    }}
+                />
+                <Drawer.Screen
+                    name='ReserveCampsite'
+                    component={ReservationNavigator}
+                    options={{
+                        title: 'Reserve Campsite',
+                        drawerIcon: ({ color }) => (
+                            <Icon
+                                name='tree'
                                 type='font-awesome'
                                 size={24}
                                 iconStyle={{ width: 24 }}
